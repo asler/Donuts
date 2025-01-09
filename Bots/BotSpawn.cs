@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using Donuts.Models;
 using EFT;
 using HarmonyLib;
+using Newtonsoft.Json;
 using UnityEngine;
 using static Donuts.DefaultPluginVars;
 using static Donuts.DonutComponent;
@@ -60,6 +61,8 @@ namespace Donuts
 
             var minSpawnDistFromPlayer = SpawnChecks.GetMinDistanceFromPlayer();
 
+            DonutComponent.Logger.LogDebug($"SpawnChecks.GetValidSpawnPosition");
+
             foreach (var coordinate in coordinates)
             {
                 Vector3? spawnPosition = await SpawnChecks.GetValidSpawnPosition(minSpawnDistFromPlayer, 1, 1, coordinate, maxSpawnTriesPerBot.Value, cancellationToken);
@@ -81,6 +84,8 @@ namespace Donuts
                 var closestBotZone = botSpawnerClass.GetClosestZone(spawnPosition, out _);
                 var closestCorePoint = GetClosestCorePoint(spawnPosition);
                 botCacheElement.AddPosition(spawnPosition, closestCorePoint.Id);
+
+
 
 #if DEBUG
                 DonutComponent.Logger.LogWarning($"Spawning bots at distance to player of: {Vector3.Distance(spawnPosition, gameWorld.MainPlayer.Position)} " +
@@ -482,7 +487,7 @@ namespace Donuts
         {
             BotDifficulty botdifficulty = GetBotDifficulty(wildSpawnType, WildSpawnType.pmcUSEC, WildSpawnType.pmcBEAR);
 
-            IProfileData botData = new IProfileData(side, wildSpawnType, botdifficulty, 0f, null);
+            GClass652 botData = new GClass652(side, wildSpawnType, botdifficulty, 0f, null);
             BotCreationDataClass bot = await BotCreationDataClass.Create(botData, ibotCreator, 1, botSpawnerClass);
 
             var minSpawnDistFromPlayer = SpawnChecks.GetMinDistanceFromPlayer();

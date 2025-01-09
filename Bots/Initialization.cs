@@ -19,7 +19,7 @@ using System.Threading;
 
 namespace Donuts
 {
-    internal class Initialization
+    public class Initialization
     {
 
         internal static int PMCBotLimit;

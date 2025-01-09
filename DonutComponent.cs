@@ -134,7 +134,7 @@ namespace Donuts
                 methodCache[methodInfo.Name] = methodInfo;
             }
 
-            methodInfo = AccessTools.Method(typeof(BotSpawner), "method_10");
+            methodInfo = AccessTools.Method(typeof(BotSpawner), "method_11");
             if (methodInfo != null)
             {
                 methodCache[methodInfo.Name] = methodInfo;
@@ -151,10 +151,13 @@ namespace Donuts
                 }
             }
 
-            botSpawnerClass.OnBotRemoved += removedBot =>
-            {
+           /* botSpawnerClass.OnBotRemoved += async removedBot =>
+            {   
+                List<UniTask> tasks= new List<UniTask>();
+
                 foreach (var player in playerList)
                 {
+                    await UniTask.DelayFrame(1);
                     removedBot.Memory.DeleteInfoAboutEnemy(player);
                 }
                 removedBot.EnemiesController.EnemyInfos.Clear();
@@ -165,14 +168,16 @@ namespace Donuts
                     {
                         continue;
                     }
-
+                   // await UniTask.DelayFrame(1);
                     var botOwner = player.AIData.BotOwner;
                     botOwner.Memory.DeleteInfoAboutEnemy(removedBot);
                     botOwner.BotsGroup.RemoveInfo(removedBot);
                     botOwner.BotsGroup.RemoveEnemy(removedBot, EBotEnemyCause.death);
                     botOwner.BotsGroup.RemoveAlly(removedBot);
                 }
-            };
+
+                await UniTask.WhenAll(tasks);
+            };*/
         }
 
         private Stopwatch spawnCheckTimer = new Stopwatch();
@@ -216,7 +221,7 @@ namespace Donuts
             ResetPlayerList();
         }
 
-        private void BeingHitBattleCoolDown(DamageInfo info, EBodyPart part, float arg3)
+        private void BeingHitBattleCoolDown(DamageInfoStruct info, EBodyPart part, float arg3)
         {
             switch (info.DamageType)
             {
@@ -236,8 +241,9 @@ namespace Donuts
 
         private void Update()
         {
+           /* 
             if (!PluginEnabled.Value || !fileLoaded || !IsBotSpawningEnabled)
-                return;
+                return;*/
 
             timeSinceLastHit += Time.deltaTime;
 
@@ -252,7 +258,7 @@ namespace Donuts
             }
 
             if (spawnCheckTimer.ElapsedMilliseconds >= SpawnCheckInterval)
-            {
+            {   
                 spawnCheckTimer.Restart();
                 StartSpawnProcess(cts.Token).Forget();
             }

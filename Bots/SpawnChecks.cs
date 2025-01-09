@@ -58,7 +58,7 @@ namespace Donuts
                 IsSpawnInAir(spawnPosition, cancellationToken)
             };
 
-            var tasks2 = new List<Task<bool>>
+            var tasks2 = new List<UniTask<bool>>
             {
             };
 
@@ -77,7 +77,7 @@ namespace Donuts
             //add to results if tasks2 not empty
             if (tasks2.Count > 0)
             {
-                bool[] results2 = await Task.WhenAll(tasks2);
+                bool[] results2 = await UniTask.WhenAll(tasks2);
                 results = results.Concat(results2).ToArray();
             }
 
@@ -185,44 +185,43 @@ namespace Donuts
             }
         }
 
-        internal static async Task<bool> IsMinSpawnDistanceFromPlayerTooShort(Vector3 position, CancellationToken cancellationToken)
+        internal static async UniTask<bool> IsMinSpawnDistanceFromPlayerTooShort(Vector3 position, CancellationToken cancellationToken)
         {
             float minDistanceFromPlayer = GetMinDistanceFromPlayer();
 
-            var tasks = playerList
+            var results = playerList
                 .Where(player => player != null && player.HealthController != null && player.HealthController.IsAlive)
-                .Select(player => Task.Run(() =>
+                .Select(player => 
                 {
                     if ((player.Position - position).sqrMagnitude < (minDistanceFromPlayer * minDistanceFromPlayer))
                     {
                         return true;
                     }
                     return false;
-                }, cancellationToken))
-                .ToList();
+                }).ToList();
 
-            bool[] results = await Task.WhenAll(tasks);
+            //bool[] results = await Task.WhenAll(tasks);
             return results.Any(result => result);
         }
 
-        internal static async Task<bool> IsPositionTooCloseToOtherBots(Vector3 position, CancellationToken cancellationToken)
+        internal static async UniTask<bool> IsPositionTooCloseToOtherBots(Vector3 position, CancellationToken cancellationToken)
         {
             float minDistanceFromOtherBots = GetMinDistanceFromOtherBots();
             List<Player> players = Singleton<GameWorld>.Instance.AllAlivePlayersList;
 
-            var tasks = players
+            var results = players
                 .Where(player => player != null && player.HealthController.IsAlive && !player.IsYourPlayer)
-                .Select(player => Task.Run(() =>
+                .Select(player => 
                 {
                     if ((player.Position - position).sqrMagnitude < (minDistanceFromOtherBots * minDistanceFromOtherBots))
                     {
                         return true;
                     }
                     return false;
-                }, cancellationToken))
-                .ToList();
+                }).ToList();
 
-            bool[] results = await Task.WhenAll(tasks);
+            //bool[] results = await Task.WhenAll(tasks);
+            //bool[] results = await Task.WhenAll(tasks);
             return results.Any(result => result);
         }
 

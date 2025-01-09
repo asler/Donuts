@@ -15,26 +15,27 @@ namespace Donuts.Patches
         protected override MethodBase GetTargetMethod()
         {
             Type baseGameType = typeof(BaseLocalGame<EftGamePlayerOwner>);
+            
             return baseGameType.GetMethod("vmethod_4", BindingFlags.Public | BindingFlags.Instance);
         }
 
         [PatchPostfix]
-        private static void PatchPostfix(ref IEnumerator __result, object __instance)
+        private static void PatchPostfix(object __instance)
         {
-            if(!Singleton<AbstractGame>.Instance.InRaid)
+            if (!Singleton<AbstractGame>.Instance.InRaid)
             {
                 return;
             }
 
             localGameObj = __instance;
 
-            if(DonutComponent.IsBotSpawningEnabled)
+            if (DonutComponent.IsBotSpawningEnabled)
             {
-                __result = addIterationsToWaitForBotGenerators(__result); // Thanks danW
+                addIterationsToWaitForBotGenerators(); // Thanks danW
             }
         }
 
-        private static IEnumerator addIterationsToWaitForBotGenerators(IEnumerator originalTask)
+        private static IEnumerator addIterationsToWaitForBotGenerators()
         {
             // Now also wait for all bots to be fully initialized
             Logger.LogWarning("Donuts is waiting for bot preparation to complete...");
@@ -61,7 +62,7 @@ namespace Donuts.Patches
 
             // Continue with the original task
             Logger.LogWarning("Donuts bot preparation is complete...");
-            yield return originalTask;
+            //yield return originalTask;
         }
     }
 }

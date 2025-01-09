@@ -184,6 +184,9 @@ namespace Donuts
 
             // Get selected preset and setup bot limits now
             selectionName = DonutsPlugin.RunWeightedScenarioSelection();
+
+            Logger.LogDebug("selectionName " + selectionName); //JsonConvert.SerializeObject(startingBotConfig));
+
             Initialization.SetupBotLimit(selectionName);
 
             var startingBotConfig = DonutComponent.GetStartingBotConfig(selectionName);
@@ -235,7 +238,7 @@ namespace Donuts
             }
         }
 
-        private void Mainplayer_BeingHitAction(DamageInfo arg1, EBodyPart arg2, float arg3)
+        private void Mainplayer_BeingHitAction(DamageInfoStruct arg1, EBodyPart arg2, float arg3)
         {
             switch (arg1.DamageType)
             {
@@ -426,10 +429,12 @@ namespace Donuts
 
         internal static async UniTask CreateBot(PrepBotInfo botInfo, bool isGroup, int groupSize, CancellationToken cancellationToken)
         {
-            var botData = new IProfileData(botInfo.Side, botInfo.SpawnType, botInfo.Difficulty, 0f, null);
 #if DEBUG
             Logger.LogDebug($"Creating bot: Type={botInfo.SpawnType}, Difficulty={botInfo.Difficulty}, Side={botInfo.Side}, GroupSize={groupSize}");
 #endif
+
+            GClass652 botData = new GClass652(botInfo.Side, botInfo.SpawnType, botInfo.Difficulty, 0f, null);
+
             BotCreationDataClass bot = await BotCreationDataClass.Create(botData, botCreator, groupSize, botSpawnerClass);
             if (bot == null || bot.Profiles == null || !bot.Profiles.Any())
             {

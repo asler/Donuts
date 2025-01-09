@@ -245,7 +245,7 @@ namespace Donuts
             return DefaultPluginVars.pmcScenarios.FirstOrDefault(folder => folder.Name == folderName);
         }
 
-        internal static string RunWeightedScenarioSelection()
+        public static string RunWeightedScenarioSelection()
         {
             try
             {
